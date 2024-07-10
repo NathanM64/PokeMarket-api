@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using api.Services;
 using api.Models;
 using System.Linq;
+using System.Text.Json;
 using Api.Database;
 
 namespace api.Controllers
@@ -45,7 +46,35 @@ namespace api.Controllers
             }
 
             await _context.SaveChangesAsync();
-            return Ok(new { message = "Pokemon sets updated successfully." });
+            return Ok(new { message = "Pokemon card sets updated successfully." });
+        }
+        
+        [HttpPost("update-cards")]
+        public async Task<IActionResult> UpdatePokemonCardsBySetId(string setId)
+        {
+            var cards = await _pokemonApiService.GetPokemonCardsAsync(setId);
+            foreach (var card in cards)
+            {
+                var existingCard = _context.Cards.FirstOrDefault(c => c.Id == card.Id);
+                if (existingCard == null)
+                {
+                    _context.Cards.Add(card);
+                }
+                else
+                {
+                    existingCard.Name = card.Name;
+                    existingCard.SetId = card.SetId;
+                    existingCard.Number = card.Number;
+                    existingCard.Artist = card.Artist;
+                    existingCard.Rarity = card.Rarity;
+                    existingCard.SmallImageUrl = card.SmallImageUrl;
+                    existingCard.LargeImageUrl = card.LargeImageUrl;
+                    _context.Cards.Update(existingCard);
+                }
+            }
+
+            await _context.SaveChangesAsync();
+            return Ok(new { message = "Pokemon cards updated successfully." });
         }
     }
 }

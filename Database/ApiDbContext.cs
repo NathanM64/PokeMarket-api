@@ -11,6 +11,8 @@ namespace Api.Database
         }
 
         public DbSet<CardSet> CardSets { get; set; }
+        public DbSet<Card> Cards { get; set; }
+        public DbSet<MarketPrice> MarketPrices { get; set; }
         
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
